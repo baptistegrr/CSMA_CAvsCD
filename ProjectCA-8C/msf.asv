@@ -1,0 +1,21 @@
+% the Main Simulation File (MSF) to run simulation CSMA/CA
+clear all; clc; close all; 
+global global_info
+
+global_info.semafore = 0; %is the medium busy ?
+global_info.STOP_AT = 250;
+pns = pnstruct({'PDF_Common','PDF_ClientCA','PDF_MediumCA','PDF_ClientCA2','PDF_ClientCA3','PDF_ClientCA4'}); % create petri net structure
+
+dyn.ft = {'tGen','unifrnd(5,10)','tWaitIdle','unifrnd(10,20)','tWaitSend',5,...
+            'tGen2','unifrnd(5,10)','tWaitIdle2','unifrnd(10,20)','tWaitSend2',5,...
+            'tGen3','unifrnd(5,10)','tWaitIdle3','unifrnd(10,20)','tWaitSend3',5,...
+            'tGen4',5,'tWaitIdle4','unifrnd(10,20)','tWaitSend4',5,...
+            'tAck',10,'allothers', 1};
+
+dyn.ip={'tIn',2, 'tCollision',1};
+pni = initialdynamics(pns, dyn);
+
+Sim_Results = gpensim(pni); % perform simulation runs
+%prnss(Sim_Results); % print the simulation results 
+figure;plotp(Sim_Results, {'pCollision','pAck','pTotalSent'}); % plot the results
+figure;plotp(Sim_Results, {'pNbSent','pNbSent2','pNbSent3','pNbSent4'}); % plot the results
